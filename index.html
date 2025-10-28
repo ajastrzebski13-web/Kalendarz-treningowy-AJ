@@ -263,33 +263,31 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-<button id="installBtn" style="position:fixed;right:16px;bottom:16px;padding:12px 16px;background:#22c55e;color:#fff;border:none;border-radius:12px;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.2);z-index:9999;cursor:pointer">+ Zainstaluj</button>
+<button id="installBtn" style="position:fixed;right:16px;bottom:16px;padding:12px 16px;background:#22c55e;color:#fff;border:none;border-radius:12px;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.2);z-index:9999;cursor:pointer">+ Zainstaluj aplikację</button>
 
 
 <script>
 (function(){
-  var btn=document.getElementById('installBtn');
-  if(!btn) return;
-  var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  if(standalone){ btn.style.display='none'; }
-  var deferredPrompt=null;
-  window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); deferredPrompt=e; });
-  btn.addEventListener('click', async function(){
-    if(deferredPrompt && deferredPrompt.prompt){
+  var btn = document.getElementById('installBtn');
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (btn && isStandalone) btn.style.display = 'none';
+  var deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt = e; });
+  if (btn) btn.addEventListener('click', async function(){
+    if (deferredPrompt && deferredPrompt.prompt) {
       deferredPrompt.prompt();
-      var choice = await deferredPrompt.userChoice;
-      deferredPrompt=null;
-      if(choice && choice.outcome==='accepted'){ btn.style.display='none'; }
-    }else{
-      alert('Jeśli nie widzisz okna instalacji, kliknij w Chrome: ⋮ → „Dodaj do ekranu głównego”.');
+      var c = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      if (c && c.outcome === 'accepted') btn.style.display='none';
+    } else {
+      alert('Jeśli nie widać okna instalacji, użyj: ⋮ → „Zainstaluj aplikację”.');
     }
   });
   window.addEventListener('appinstalled', function(){
-    btn.style.display='none';
-    alert('✅ Aplikacja AJ Kalendarz Treningowy została zainstalowana i jest dostępna offline.');
-    try{ localStorage.setItem('aj-installed','1'); }catch(e){}
+    if (btn) btn.style.display='none';
+    alert('✅ Aplikacja AJ Kalendarz Treningowy została zainstalowana i działa offline.');
   });
-  if('serviceWorker' in navigator){
+  if ('serviceWorker' in navigator) {
     window.addEventListener('load', function(){
       navigator.serviceWorker.register('/sw.js').catch(function(e){ console.log('SW error:', e); });
     });

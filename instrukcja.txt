@@ -1,4 +1,4 @@
-1) Wgraj pliki na Vercel/GitHub Pages
+1) Wgraj wszystko na Vercel pod domenę https://kalendarz-treningowy-aj.vercel.app/
 2) Otwórz raz online w Chrome (Android)
-3) Kliknij + Zainstaluj (okno się pojawi)
-4) Po instalacji przycisk znika; działa offline
+3) Kliknij zielony „+ Zainstaluj aplikację” lub ⋮ → Zainstaluj aplikację
+4) Po instalacji przycisk znika, aplikacja działa offline
