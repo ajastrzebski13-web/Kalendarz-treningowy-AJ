@@ -1,6 +1,4 @@
-AJ Kalendarz — Forced PWA Android (domena: https://kalendarz-treningowy-aj.vercel.app/)
-
-1) Wgraj wszystkie pliki do katalogu głównego projektu na Vercel.
-2) Wejdź ONLINE na https://kalendarz-treningowy-aj.vercel.app/ w Chrome na Androidzie – SW się zarejestruje.
-3) Kliknij zielony „+ Zainstaluj aplikację”. Jeśli Chrome nie pokaże okna, użyj menu: ⋮ → „Zainstaluj aplikację”.
-4) Po instalacji przycisk znika; aplikacja działa OFFLINE (cache-first).
+1) Wgraj wszystko na Vercel pod domenę https://kalendarz-treningowy-aj.vercel.app/
+2) Otwórz raz online w Chrome (Android)
+3) Kliknij zielony „+ Zainstaluj aplikację” lub ⋮ → Zainstaluj aplikację
+4) Po instalacji przycisk znika, aplikacja działa offline
