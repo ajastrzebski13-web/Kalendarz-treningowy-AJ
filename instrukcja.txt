@@ -1,4 +1,6 @@
-1) Wgraj wszystko na Vercel pod domenę https://kalendarz-treningowy-aj.vercel.app/
-2) Otwórz raz online w Chrome (Android)
-3) Kliknij zielony „+ Zainstaluj aplikację” lub ⋮ → Zainstaluj aplikację
-4) Po instalacji przycisk znika, aplikacja działa offline
+AJ Kalendarz — Android PRO (baner instalacyjny + offline + auto-prompt)
+
+1) Wgraj WSZYSTKIE pliki do katalogu głównego projektu na Vercel.
+2) Otwórz ONLINE w Chrome (Android) — SW się zarejestruje.
+3) Kliknij czerwony baner „Zainstaluj” lub zaakceptuj natywne okno instalacji.
+4) Po instalacji baner znika; aplikacja działa OFFLINE (cache-first).

@@ -1,8 +1,8 @@
 {
   "name": "AJ Kalendarz Treningowy",
   "short_name": "AJ Kalendarz",
-  "start_url": "https://kalendarz-treningowy-aj.vercel.app/",
-  "scope": "https://kalendarz-treningowy-aj.vercel.app/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
@@ -18,5 +18,8 @@
       "type": "image/png"
     }
   ],
-  "id": "/?app=aj-kalendarz"
+  "id": "/?app=aj-kalendarz",
+  "orientation": "portrait",
+  "description": "AJ Kalendarz Treningowy — działa offline jako aplikacja PWA.",
+  "prefer_related_applications": false
 }

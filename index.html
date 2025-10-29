@@ -55,6 +55,18 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="icons/aj-180.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/aj-192.png">
+
+<style>
+  .aj-install-banner{position:sticky;top:0;z-index:10000;display:none;align-items:center;gap:12px;padding:10px 14px;background:#d32f2f;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  .aj-install-banner .aj-logo{width:28px;height:28px;border-radius:6px;background:#22c55e;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;letter-spacing:.5px}
+  .aj-install-banner .aj-text{flex:1;font-weight:700}
+  .aj-install-banner .aj-btn{background:#ffffff;border:none;color:#d32f2f;font-weight:800;padding:8px 12px;border-radius:10px;cursor:pointer}
+  .aj-dark-toggle{position:fixed;right:16px;bottom:16px;z-index:10000;border:none;border-radius:999px;padding:10px 12px;background:#111;color:#fff;font-weight:700;opacity:.9}
+  :root{--aj-bg:#ffffff;--aj-fg:#111111}
+  html.aj-dark{--aj-bg:#121212;--aj-fg:#eaeaea}
+  body.aj-dark-scope{background:var(--aj-bg)!important;color:var(--aj-fg)!important}
+</style>
+
 </head>
 <body>
 <div id="splash"><div class="logo"><span>AJ</span></div></div>
@@ -263,33 +275,91 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-<button id="installBtn" style="position:fixed;right:16px;bottom:16px;padding:12px 16px;background:#22c55e;color:#fff;border:none;border-radius:12px;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.2);z-index:9999;cursor:pointer">+ Zainstaluj aplikację</button>
 
+<div id="ajInstallBar" class="aj-install-banner" role="region" aria-label="Instalacja aplikacji">
+  <div class="aj-logo" aria-hidden="true">AJ</div>
+  <div class="aj-text">Zainstaluj aplikację AJ Kalendarz</div>
+  <button id="ajInstallBtn" class="aj-btn">Zainstaluj</button>
+</div>
+<button id="ajDarkToggle" class="aj-dark-toggle" title="Tryb ciemny">🌙</button>
 
 <script>
 (function(){
-  var btn = document.getElementById('installBtn');
-  var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  if (btn && isStandalone) btn.style.display = 'none';
-  var deferredPrompt = null;
-  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt = e; });
-  if (btn) btn.addEventListener('click', async function(){
-    if (deferredPrompt && deferredPrompt.prompt) {
-      deferredPrompt.prompt();
-      var c = await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      if (c && c.outcome === 'accepted') btn.style.display='none';
-    } else {
-      alert('Jeśli nie widać okna instalacji, użyj: ⋮ → „Zainstaluj aplikację”.');
+  try{
+    if(!localStorage.getItem('aj-welcome')){
+      localStorage.setItem('aj-welcome','1');
+      setTimeout(()=>alert('AJ Kalendarz – aplikacja działa offline po instalacji.')), 300;
     }
+  }catch(e){}
+
+  const root = document.documentElement;
+  const body = document.body;
+  const dmKey = 'aj-dark';
+  function applyDM(val){
+    if(val==='1'){ root.classList.add('aj-dark'); body.classList.add('aj-dark-scope'); }
+    else{ root.classList.remove('aj-dark'); body.classList.remove('aj-dark-scope'); }
+  }
+  try{ applyDM(localStorage.getItem(dmKey)); }catch(e){}
+  const toggle = document.getElementById('ajDarkToggle');
+  if(toggle){
+    toggle.addEventListener('click', ()=>{
+      const cur = root.classList.contains('aj-dark') ? '0' : '1';
+      try{ localStorage.setItem(dmKey, cur);}catch(e){}
+      applyDM(cur);
+      toggle.textContent = (cur==='1') ? '☀️' : '🌙';
+    });
+    toggle.textContent = root.classList.contains('aj-dark') ? '☀️' : '🌙';
+  }
+
+  let deferredPrompt = null;
+  const bar = document.getElementById('ajInstallBar');
+  const btn = document.getElementById('ajInstallBtn');
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+  function showBar(){ if(bar) bar.style.display = 'flex'; }
+  function hideBar(){ if(bar) bar.style.display = 'none'; }
+
+  if(!isStandalone){ showBar(); } else { hideBar(); }
+
+  window.addEventListener('beforeinstallprompt', (e)=>{
+    e.preventDefault();
+    deferredPrompt = e;
+    showBar();
+    setTimeout(async ()=>{
+      if(deferredPrompt && deferredPrompt.prompt){
+        deferredPrompt.prompt();
+        const res = await deferredPrompt.userChoice;
+        if(res && res.outcome==='accepted'){ hideBar(); deferredPrompt=null; }
+      }
+    }, 1200);
   });
-  window.addEventListener('appinstalled', function(){
-    if (btn) btn.style.display='none';
-    alert('✅ Aplikacja AJ Kalendarz Treningowy została zainstalowana i działa offline.');
+
+  async function tryInstall(){
+    if(deferredPrompt && deferredPrompt.prompt){
+      deferredPrompt.prompt();
+      const res = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      if(res && res.outcome==='accepted'){ hideBar(); return true; }
+    }
+    return false;
+  }
+
+  async function forceInstall(){
+    const ok = await tryInstall();
+    if(!ok){
+      alert('Jeśli nie pojawia się okno instalacji:\n1) Kliknij ⋮ w Chrome\n2) Wybierz „Zainstaluj aplikację”.\nPo instalacji aplikacja działa offline.');
+    }
+  }
+  if(btn){ btn.addEventListener('click', forceInstall); }
+
+  window.addEventListener('appinstalled', ()=>{
+    hideBar();
+    alert('✅ AJ Kalendarz został zainstalowany i działa offline.');
   });
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function(){
-      navigator.serviceWorker.register('/sw.js').catch(function(e){ console.log('SW error:', e); });
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', ()=>{
+      navigator.serviceWorker.register('/sw.js').catch(e=>console.log('SW reg error', e));
     });
   }
 })();
