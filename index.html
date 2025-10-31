@@ -299,54 +299,42 @@ if ('serviceWorker' in navigator) {
 <style>
   #ajInstallFab{position:fixed;right:16px;bottom:16px;padding:10px 14px;border:0;border-radius:12px;
     background:#22c55e;color:#fff;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer;display:none;z-index:9999}
-  @media (display-mode: standalone){ #ajInstallFab{ display:none !important; } }
+  @media (display-mode: standalone){#ajInstallFab{display:none!important}}
 </style>
 <button id="ajInstallFab" aria-label="Zainstaluj aplikację">+ Zainstaluj</button>
 <script>
 (function(){
-  let deferredPrompt = null;
-  const fab = document.getElementById('ajInstallFab');
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  if(isStandalone && fab){ fab.style.display='none'; }
-
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', ()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+  }
+  let deferredPrompt=null;
+  const fab=document.getElementById('ajInstallFab');
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if(standalone && fab) fab.style.display='none';
   window.addEventListener('beforeinstallprompt', (e)=>{
     e.preventDefault();
-    deferredPrompt = e;
+    deferredPrompt=e;
     setTimeout(async ()=>{
       try{ window.scrollTo(0,1); window.scrollTo(0,0); document.body.dispatchEvent(new Event('click')); }catch(_){}
-      if(deferredPrompt && deferredPrompt.prompt){
+      if(deferredPrompt?.prompt){
         deferredPrompt.prompt();
-        const res = await deferredPrompt.userChoice;
-        if(!(res && res.outcome==='accepted') && fab){ fab.style.display='inline-block'; }
-        deferredPrompt = null;
-      } else {
-        if(fab){ fab.style.display='inline-block'; }
-      }
+        const res=await deferredPrompt.userChoice;
+        if(!(res && res.outcome==='accepted') && fab) fab.style.display='inline-block';
+        deferredPrompt=null;
+      } else { if(fab) fab.style.display='inline-block'; }
     }, 1200);
   });
-
-  if(fab){
-    fab.addEventListener('click', async ()=>{
-      if(deferredPrompt && deferredPrompt.prompt){
-        deferredPrompt.prompt();
-        const res = await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        if(res && res.outcome==='accepted'){ fab.style.display='none'; }
-      } else {
-        alert('Jeśli nie pojawia się okno instalacji: w Chrome kliknij ⋮ → „Zainstaluj aplikację”.');
-      }
-    });
-  }
-
-  window.addEventListener('appinstalled', ()=>{
-    if(fab){ fab.style.display='none'; }
+  fab?.addEventListener('click', async ()=>{
+    if(deferredPrompt?.prompt){
+      deferredPrompt.prompt();
+      const res=await deferredPrompt.userChoice;
+      deferredPrompt=null;
+      if(res && res.outcome==='accepted') fab.style.display='none';
+    } else {
+      alert('Jeśli nie ma okna instalacji: menu ⋮ w Chrome → „Zainstaluj aplikację”.');
+    }
   });
-
-  if('serviceWorker' in navigator){
-    window.addEventListener('load', ()=>{
-      navigator.serviceWorker.register('/sw.js').catch(()=>{});
-    });
-  }
+  window.addEventListener('appinstalled', ()=>fab && (fab.style.display='none'));
 })();
 </script>
 

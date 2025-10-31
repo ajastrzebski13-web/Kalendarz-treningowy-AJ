@@ -1,7 +1,7 @@
-AJ Kalendarz — INSTALL FIX (Android, Chrome)
-Docelowa domena (alias Vercel): aj-kalendarz.vercel.app
+AJ Kalendarz – FINAL INSTALLABLE
+Alias Vercel: aj-kalendarz.vercel.app
 
-1) Wgraj WSZYSTKIE pliki z ZIP do katalogu głównego projektu na Vercel.
-2) Otwórz ONLINE https://aj-kalendarz.vercel.app w Chrome (Android).
-3) Po ~1–2 s Chrome pokaże okno instalacji. Jeśli nie: pojawi się mały przycisk „+ Zainstaluj” (kliknij).
-4) Po instalacji aplikacja działa OFFLINE (cache-first).
+1) Wgraj WSZYSTKIE pliki z tego ZIP do katalogu głównego projektu na Vercel.
+2) Otwórz ONLINE https://aj-kalendarz.vercel.app w Chrome na Androidzie.
+3) Po 1–2 s pojawi się okno instalacji. Jeśli nie: mały przycisk „+ Zainstaluj” (prawy dół).
+4) Po instalacji aplikacja działa OFFLINE.
